@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  # Ubuntu 14.04 Trusty Tahr is an Ubuntu LTS release
+  # Note: Don't use Cloud Image releases.  You'll be in for a world of hurt
+  #       when it comes to setting up NFS compatible networking
+  config.vm.box = "puppetlabs/ubuntu-14.04-64-nocm"
+  config.vm.box_version = "1.0.2"
+  # Move SSH up to 22222, hopefully we avoid collisions up there 
+  config.vm.network :forwarded_port, guest: 22, host: 22222, id: "ssh"
+  # Stand up a bridged adapter so we can talk to NFS
+  config.vm.network "public_network", auto_config: false
+  # Virtualbox specific config
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "2048"
+    vb.name = "local-trusty"
+  end
+  # Provision the Ubuntu guest on the guest itself via guest_ansible plugin
+  config.vm.provision :guest_ansible do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+end

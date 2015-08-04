@@ -1,0 +1,15 @@
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# NAT interface
+# Vagrant talks to this adapter
+auto eth0
+iface eth0 inet dhcp
+metric 1
+
+# Public interface
+# Everything else through here
+auto eth1
+iface eth1 inet dhcp
+metric 0
