@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
   config.vm.network "public_network", auto_config: false
   # Virtualbox specific config
   config.vm.provider "virtualbox" do |vb|
-    vb.gui = true
+    vb.gui = false
     vb.memory = "2048"
     vb.name = "local-trusty"
   end
