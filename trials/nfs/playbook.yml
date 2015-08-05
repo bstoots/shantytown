@@ -3,13 +3,19 @@
   sudo: true
   tasks:
     - include_vars: user_config.yml
+    - include_vars: user_packages.yml
     - copy: src=/vagrant/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644 force=yes
-    - shell: "ifdown eth0 ; ifup eth0 ; ifdown eth1 ; ifup eth1"
+    - shell: "ifdown eth0 ; ifup eth0 ; ifdown eth1 ; ifup eth1 ; ifdown eth2 ; ifup eth2"
     #- apt: upgrade=dist
-    - apt: pkg=nfs-common state=present
+    - apt: pkg={{item}} state=present
+      with_items: 
+        - nfs-common
+        - "{{packages}}"
     - service: name=rpcbind state=started enabled=yes
     - group: name={{user | mandatory}} gid={{uid | mandatory}} state=present
     - user: name={{user | mandatory}} uid={{uid | mandatory}} shell=/bin/bash group={{user | mandatory}} groups=sudo,vboxsf append=yes password={{ pass | password_hash('sha512') | mandatory }}
     - file: path={{nfsmount | mandatory}} owner={{uid | mandatory}} group={{uid | mandatory}} state=directory
     - mount: name={{nfsmount | mandatory}} src={{nfsserver | mandatory}}:{{nfspath | mandatory}} fstype=nfs opts="rw,tcp,nolock" state=present
     #- mount: name=/vagrant src=vagrant fstype=vboxsf opts="uid=1000,gid=1000,rw" state=present
+    - authorized_key: user={{user | mandatory }} key="{{sshkey}}"
+      when: sshkey is defined
