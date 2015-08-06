@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  sudo: true
+  tasks:
+    # Tasks go here
