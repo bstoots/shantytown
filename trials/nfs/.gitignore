@@ -1,3 +1,5 @@
+vagrant_config.yml
 user_config.yml
 user_packages.yml
+known_hosts
 vagrant_ansible_inventory_default

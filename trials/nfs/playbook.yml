@@ -4,18 +4,35 @@
   tasks:
     - include_vars: user_config.yml
     - include_vars: user_packages.yml
+    # Configure networking manually so all interfaces are consistent
     - copy: src=/vagrant/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644 force=yes
     - shell: "ifdown eth0 ; ifup eth0 ; ifdown eth1 ; ifup eth1 ; ifdown eth2 ; ifup eth2"
-    #- apt: upgrade=dist
+    # Explicitly set timezone
+    - copy: content={{ timezone | mandatory }}
+            dest=/etc/timezone
+            owner=root
+            group=root
+            mode=0644
+            backup=no
+    - command: dpkg-reconfigure --frontend noninteractive tzdata
+    # Hack in support for our custom sshpass since the official one is broken and barely maintained
+    - get_url: url={{ sshpassdeb }} dest="/tmp/sshpass4real_1.1-1_amd64.deb" mode=0700
+      when: sshpassdeb is defined
+    - apt: deb=/tmp/sshpass4real_1.1-1_amd64.deb state=present
+      when: sshpassdeb is defined
+    - file: path=/usr/bin/sshpass src=/usr/bin/sshpass4real state=link force=yes
+      when: sshpassdeb is defined
+    # Install and configure packages from apt sources
     - apt: pkg={{item}} state=present
       with_items: 
         - nfs-common
         - "{{packages}}"
-    - service: name=rpcbind state=started enabled=yes
+    # Setup user account using values from user_config.yml
     - group: name={{user | mandatory}} gid={{uid | mandatory}} state=present
     - user: name={{user | mandatory}} uid={{uid | mandatory}} shell=/bin/bash group={{user | mandatory}} groups=sudo,vboxsf append=yes password={{ pass | password_hash('sha512') | mandatory }}
-    - file: path={{nfsmount | mandatory}} owner={{uid | mandatory}} group={{uid | mandatory}} state=directory
-    - mount: name={{nfsmount | mandatory}} src={{nfsserver | mandatory}}:{{nfspath | mandatory}} fstype=nfs opts="rw,tcp,nolock" state=present
-    #- mount: name=/vagrant src=vagrant fstype=vboxsf opts="uid=1000,gid=1000,rw" state=present
     - authorized_key: user={{user | mandatory }} key="{{sshkey}}"
       when: sshkey is defined
+    # Setup user NFS
+    - service: name=rpcbind state=started enabled=yes
+    - file: path={{nfsmount | mandatory}} owner={{uid | mandatory}} group={{uid | mandatory}} state=directory
+    - mount: name={{nfsmount | mandatory}} src={{nfsserver | mandatory}}:{{nfspath | mandatory}} fstype=nfs opts="rw,tcp,nolock" state=mounted
