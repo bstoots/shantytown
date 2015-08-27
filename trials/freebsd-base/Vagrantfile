@@ -1,27 +1,38 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'yaml'
+
+# Load user specific vars from vagrant_config.yml
+current_dir    = File.dirname(File.expand_path(__FILE__))
+config        = YAML.load_file("#{current_dir}/vagrant_config.yml")
+vagrant_config = config['config']
+
 Vagrant.configure(2) do |config|
   # arkadi/freebsd images comes with sane defaults
   config.vm.guest = :freebsd
   config.vm.box = 'arkadi/freebsd-10.1-amd64'
   config.vm.box_version = "1.0"
-  config.vm.hostname = "freebsd-base"
-  # Stand up a private adapter for vagrant-winnfsd
-  # config.vm.network "private_network", type: "dhcp"
+  # Set hostname and vagrant name
+  config.vm.hostname = vagrant_config['hostname']
+  config.vm.define vagrant_config['hostname'].to_sym do |name_config| end
+  # Config private development network
+  config.vm.network "private_network", ip: vagrant_config['privateip'], auto_config: true
   # No shared folder.  We're going to treat this as a remote machine
   config.vm.synced_folder ".", "/vagrant", disabled: true
   # Virtualbox specific config
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
     vb.memory = "2048"
-    vb.name = "freebsd-base"
+    vb.name = vagrant_config['hostname']
   end
-  # Shell provisioning because FreeBSD is a second class citizen when it comes
-  # to vagrant-guest_ansible
-  config.vm.provision "shell", path: "freebsd-ansible-guest.sh"
-  # Now provision the guest itself via vagrant-guest_ansible
-  config.vm.provision :guest_ansible do |ansible|
-    ansible.playbook = "playbook.yml"
+  # Screw all of these stupid DNS plugins that aren't cross-platform.
+  # How about we just setup BIND and use nsupdate? Good idea?  Great idea.
+  config.trigger.after :up do
+    run 'powershell -noprofile -Command ' + '& Write-Output \"update add ' + vagrant_config['hostname'] + ' 60 A ' + vagrant_config['privateip'] + ' `r`n send\" | nsupdate -v -k E:\\Users\\brian.stoots\\Klocalhost.+157+06519.key'
+  end
+
+  config.trigger.after :destroy do
+    run 'powershell -noprofile -Command ' + '& Write-Output \"update delete ' + vagrant_config['hostname'] + ' A `r`n send\" | nsupdate -v -k E:\\Users\\brian.stoots\\Klocalhost.+157+06519.key'
   end
 end
