@@ -20,7 +20,7 @@ Vagrant.configure(2) do |config|
   # Stand up a bridged adapter so we can talk to NFS
   config.vm.network "public_network", :mac => vagrant_config['publicmac'], auto_config: false
   # Stand up a private adapter so we can talk to other local boxes
-  config.vm.network "private_network", ip: vagrant_config['privateip'], auto_config: false
+  config.vm.network "private_network", type: "dhcp", auto_config: true
   # Virtualbox specific config
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false

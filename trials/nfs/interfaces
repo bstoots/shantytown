@@ -17,8 +17,5 @@ metric 0
 # Private interface
 # Anything going to other local machines
 auto eth2
-iface eth2 inet static
-address 192.168.0.254
-netmask 255.255.255.0
-gateway 192.168.0.1
+iface eth2 inet dhcp
 metric 1
