@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
   config.vm.box_version = "1.0.2"
   # Set hostname and vagrant name
   config.vm.hostname = vagrant_config['hostname']
-  config.vm.define vagrant_config['hostname'].to_sym do |name_config| end
+  config.vm.define vagrant_config['vmname'].to_sym do |name_config| end
   # Move SSH port elsewhere
   config.vm.network :forwarded_port, guest: 22, host: vagrant_config['sshport'], id: "ssh"
   # Stand up a bridged adapter so we can talk to NFS
