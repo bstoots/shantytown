@@ -4,6 +4,9 @@
   tasks:
     - include_vars: user_config.yml
     - include_vars: user_packages.yml
+    # Configure networking manually so all interfaces are consistent
+    - copy: src=/vagrant/interfaces dest=/etc/network/interfaces owner=root group=root mode=0644 force=yes
+    - shell: "ifdown eth0 ; ifup eth0 ; ifdown eth1 ; ifup eth1 ; ifdown eth2 ; ifup eth2"
     # Explicitly set timezone
     - copy: content={{ timezone | mandatory }}
             dest=/etc/timezone
@@ -26,10 +29,34 @@
         - "{{packages}}"
     # Setup user account using values from user_config.yml
     - group: name={{user | mandatory}} gid={{uid | mandatory}} state=present
-    - user: name={{user | mandatory}} uid={{uid | mandatory}} shell=/bin/bash group={{user | mandatory}} groups=sudo,vboxsf append=yes password={{ pass | password_hash('sha512') | mandatory }}
+    - user: name={{user | mandatory}} uid={{uid | mandatory}} shell=/bin/bash group={{user | mandatory}} groups=sudo,vboxsf append=yes password={{ pass | password_hash('sha512') | mandatory }} update_password=on_create state=present
     - authorized_key: user={{user | mandatory }} key="{{sshkey}}"
       when: sshkey is defined
     # Setup user NFS
     - service: name=rpcbind state=started enabled=yes
     - file: path={{nfsmount | mandatory}} owner={{uid | mandatory}} group={{uid | mandatory}} state=directory
     - mount: name={{nfsmount | mandatory}} src={{nfsserver | mandatory}}:{{nfspath | mandatory}} fstype=nfs opts="rw,tcp,nolock" state=mounted
+    # Install composer
+    - get_url: url=https://getcomposer.org/installer dest="/tmp/composer_installer" mode=0700 force="no"
+    - command: "php /tmp/composer_installer --install-dir=/usr/local/bin --filename=composer"
+      args:
+        creates: /usr/local/bin/composer
+    # Get dbsteward up in here for {{user}}
+    - command: "composer global require nkiraly/dbsteward:dev-master"
+      become: yes
+      become_user: "{{user | mandatory}}"
+      args:
+        creates: /home/{{user | mandatory}}/.composer/vendor/bin/dbsteward
+    # Link it into /usr/local/bin/ since composer doesn't have a good mechanism for this
+    - file: src=/home/{{user | mandatory}}/.composer/vendor/bin/dbsteward dest=/usr/local/bin/dbsteward state=link mode=0755
+    # Configure JAVA_HOME
+    - lineinfile: dest=/etc/environment line=JAVA_HOME={{javahome}} insertafter=EOF state=present
+      when: javahome is defined
+    # Acquire and install IMX Nexus certificate and settings
+    - get_url: url={{nexuscert}} dest="/tmp/nexus.cer" mode=0700 force="yes"
+      when: javahome is defined
+    - command: "{{javahome}}/bin/keytool -import -trustcacerts -keystore {{javahome}}/jre/lib/security/cacerts -file /tmp/nexus.cer -storepass {{nexusstorepass}}"
+      ignore_errors: yes
+      when: javahome is defined
+    - get_url: url={{nexussettings}} dest="/etc/maven/settings.xml" mode=0644 force="yes"
+      when: javahome is defined
