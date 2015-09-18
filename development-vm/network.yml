@@ -1,0 +1,6 @@
+---
+# network role
+- hosts: all
+  sudo: true
+  roles:
+    - { role: network }

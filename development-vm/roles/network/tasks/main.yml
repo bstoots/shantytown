@@ -1,0 +1,12 @@
+---
+# Tasks for network
+- name: Set /etc/network/interfaces
+  template: >
+    dest=/etc/network/interfaces
+    src=interfaces.j2
+    owner=root
+    group=root
+    mode=0644
+  notify: cycle interfaces
+  # tags:
+  #   - example

@@ -1,0 +1,4 @@
+---
+# Handlers for timezone
+- name: dpkg-reconfigure tzdata
+  action: command dpkg-reconfigure --frontend noninteractive tzdata

@@ -1,0 +1,21 @@
+---
+# Tasks for nfs-client
+- name: install required apt packages
+  action: apt pkg=nfs-common state=present
+- name: start and enable rpcbind
+  action: service name=rpcbind state=started enabled=yes
+- name: create NFS mount point 
+  sudo: True
+  action: file
+    path={{nfsmount | mandatory}}
+    owner={{username | mandatory}}
+    group={{usergroup | mandatory}}
+    state=directory
+- name: mount NFS export
+  sudo: true
+  action: mount 
+    name={{nfsmount | mandatory}}
+    src="{{nfsserver | mandatory}}:{{nfsexport | mandatory}}"
+    fstype=nfs
+    opts="rw,tcp,nolock"
+    state=mounted

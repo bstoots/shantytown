@@ -1,0 +1,6 @@
+---
+# apt-packages role
+- hosts: all
+  sudo: true
+  roles:
+    - { role: apt-packages }

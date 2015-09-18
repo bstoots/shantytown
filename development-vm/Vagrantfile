@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+# Load user specific vars from vagrant_config.yml
+current_dir    = File.dirname(File.expand_path(__FILE__))
+config        = YAML.load_file("#{current_dir}/vagrant_config.yml")
+vagrant_config = config['config']
+
+# Pretty dumb but there are some bugs in vagrant-guest_ansible
+# That prevent JSON files for extra_vars
+config        = YAML.load_file("#{current_dir}/development-vm.yml")
+user_config = config['config']
+
+Vagrant.configure(2) do |config|
+  # Ubuntu 14.04 Trusty Tahr is an Ubuntu LTS release
+  # Note: Don't use Cloud Image releases.  You'll be in for a world of hurt
+  #       when it comes to setting up NFS compatible networking
+  config.vm.box = "puppetlabs/ubuntu-14.04-64-nocm"
+  config.vm.box_version = "1.0.2"
+  # Set hostname and vagrant name
+  config.vm.hostname = vagrant_config['hostname']
+  config.vm.define vagrant_config['vmname'].to_sym do |name_config| end
+  # Move SSH port elsewhere
+  config.vm.network :forwarded_port, guest: 22, host: vagrant_config['sshport'], id: "ssh"
+  # Stand up a bridged adapter so we can talk to NFS
+  config.vm.network "public_network", :mac => vagrant_config['publicmac'], auto_config: true
+  # Stand up a private adapter so we can talk to other local boxes
+  config.vm.network "private_network", type: "dhcp", auto_config: true
+  # Virtualbox specific config
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.name = vagrant_config['vmname']
+  end
+  # Provision the Ubuntu guest on the guest itself via guest_ansible plugin
+  config.vm.provision :guest_ansible do |ansible|
+    ansible.playbook = "master.yml"
+    # ansible.extra_vars = "development-vm.yml"
+    ansible.extra_vars = user_config
+  end
+end

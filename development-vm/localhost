@@ -1,0 +1,20 @@
+# localhost inventory
+
+[network]
+localhost
+
+[timezone]
+localhost
+
+[user]
+localhost
+
+[apt-packages]
+localhost
+
+[composer-packages]
+localhost
+
+[nfs-client]
+localhost
+

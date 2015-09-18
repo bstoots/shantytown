@@ -1,0 +1,5 @@
+---
+# Handlers for nfs-client
+
+#- name: example restart
+#  action: service name=service state=restarted

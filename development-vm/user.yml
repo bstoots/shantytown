@@ -1,0 +1,6 @@
+---
+# user role
+- hosts: all
+  sudo: true
+  roles:
+    - { role: user }

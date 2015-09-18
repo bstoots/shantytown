@@ -1,0 +1,6 @@
+---
+# composer-packages role
+- hosts: all
+  remote_user: "{{username | mandatory}}"
+  roles:
+    - { role: composer-packages }

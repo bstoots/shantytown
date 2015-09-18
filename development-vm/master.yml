@@ -1,0 +1,8 @@
+---
+# master playbook
+# - include: network.yml
+# - include: timezone.yml
+# - include: apt-packages.yml
+# - include: user.yml
+- include: nfs-client.yml
+# - include: composer-packages.yml
