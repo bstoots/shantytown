@@ -5,13 +5,12 @@ require 'yaml'
 
 # Load user specific vars from vagrant_config.yml
 current_dir    = File.dirname(File.expand_path(__FILE__))
-config        = YAML.load_file("#{current_dir}/vagrant_config.yml")
-vagrant_config = config['config']
-
+vconfig        = YAML.load_file("#{current_dir}/vagrant_config.yml")
+vagrant_config = vconfig['config']
 # Pretty dumb but there are some bugs in vagrant-guest_ansible
 # That prevent JSON files for extra_vars
-config        = YAML.load_file("#{current_dir}/development-vm.yml")
-user_config = config['config']
+uconfig        = YAML.load_file("#{current_dir}/vm_config.yml")
+user_config = uconfig['config']
 
 Vagrant.configure(2) do |config|
   # Ubuntu 14.04 Trusty Tahr is an Ubuntu LTS release
@@ -37,7 +36,8 @@ Vagrant.configure(2) do |config|
   # Provision the Ubuntu guest on the guest itself via guest_ansible plugin
   config.vm.provision :guest_ansible do |ansible|
     ansible.playbook = "master.yml"
-    # ansible.extra_vars = "development-vm.yml"
+    # I couldn't get vagrant-guest_ansible to read the file from the filesystem
+    # but it also accepts a Hash so lets just do that and be done with it.
     ansible.extra_vars = user_config
   end
 end
