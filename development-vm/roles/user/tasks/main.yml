@@ -17,7 +17,7 @@
     group={{username | mandatory}}
     groups=sudo,vboxsf,vagrant
     append=yes
-    password={{password | mandatory}}
+    password={{password | password_hash('sha512') | mandatory}}
     update_password=on_create
     state=present
   when: uid is defined
@@ -29,7 +29,11 @@
     group={{username | mandatory}}
     groups=sudo,vboxsf,vagrant
     append=yes
-    password={{password | mandatory}}
+    password={{password | password_hash('sha512') | mandatory}}
     update_password=on_create
     state=present
   when: uid is not defined
+# Install an SSH key for the user if specified
+- name: install user SSH key
+  action: authorized_key user={{ username | mandatory }} key="{{sshkey}}"
+  when: sshkey is defined
