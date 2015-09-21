@@ -1,0 +1,5 @@
+---
+# Handlers for composer-packages
+
+#- name: example restart
+#  action: service name=service state=restarted
