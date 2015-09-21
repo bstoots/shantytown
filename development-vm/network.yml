@@ -1,6 +1,7 @@
 ---
 # network role
 - hosts: all
-  sudo: true
+  become: true
+  become_user: root
   roles:
     - { role: network }

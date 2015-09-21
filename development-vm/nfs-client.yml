@@ -1,5 +1,7 @@
 ---
 # nfs-client role
 - hosts: all
+  become: true
+  become_user: "{{username | mandatory}}"
   roles:
     - { role: nfs-client }
