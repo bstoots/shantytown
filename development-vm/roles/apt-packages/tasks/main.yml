@@ -1,8 +1,9 @@
 ---
 # Tasks for apt-packages
-- name: install base packages
+- name: install apt packages
   action: apt pkg={{item}} update_cache=yes state=present
   with_items: 
-    - build-essential
+    - "{{aptpackages}}"
+  when: aptpackages is defined
   # tags:
   #   - example
