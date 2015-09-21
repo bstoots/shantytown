@@ -1,0 +1,7 @@
+---
+# composer-global-packages role
+- hosts: all
+  become: true
+  become_user: "{{username | mandatory}}"
+  roles:
+    - { role: composer-global-packages }

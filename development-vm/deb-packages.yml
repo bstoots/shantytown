@@ -1,0 +1,7 @@
+---
+# deb-packages role
+- hosts: all
+  become: true
+  become_user: root
+  roles:
+    - { role: deb-packages }

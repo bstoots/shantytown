@@ -1,0 +1,21 @@
+---
+  # Tasks for imx-java-dev
+- name: install required apt packages
+  action: apt pkg={{item}} state=present
+  with_items:
+    - openjdk-7-jdk
+    - maven
+  # Configure JAVA_HOME
+- name: add JAVA_HOME to /etc/environment
+  action: lineinfile dest=/etc/environment line=JAVA_HOME={{javahome | mandatory}} insertafter=EOF state=present
+  # Acquire and install IMX Nexus certificate and settings
+- name: download IMX nexus certificate
+  action: get_url url={{nexuscert | mandatory}} dest="/tmp/nexus.cer" mode=0700 force="yes"
+  # Add IMX nexus certificate to trust store
+- name: import IMX nexus certificate into keystore
+  action: command {{javahome | mandatory}}/bin/keytool -import -alias imx-nexus -file /tmp/nexus.cer -trustcacerts -keystore {{javahome | mandatory}}/jre/lib/security/cacerts -storepass {{nexusstorepass | mandatory}} -noprompt
+  ignore_errors: yes
+- name: download IMX nexus maven settings.xml
+  action: get_url url={{nexussettings}} dest="/etc/maven/settings.xml" mode=0644 force="yes"
+  # tags:
+  #   - example
