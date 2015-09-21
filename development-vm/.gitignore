@@ -1,0 +1,4 @@
+.vagrant/
+vagrant_ansible_inventory_*
+vagrant_config.yml
+vm_config.yml
