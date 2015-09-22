@@ -6,6 +6,7 @@
 
 ## Prerequisites 
 * [Git](https://git-scm.com/)
+* Powershell
 * [Vagrant](https://www.vagrantup.com)
 * [vagrant-guest_ansible Provisioner](https://github.com/vovimayhem/vagrant-guest_ansible)
 
