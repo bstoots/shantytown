@@ -16,6 +16,6 @@
   action: command {{javahome | mandatory}}/bin/keytool -import -alias imx-nexus -file /tmp/nexus.cer -trustcacerts -keystore {{javahome | mandatory}}/jre/lib/security/cacerts -storepass {{nexusstorepass | mandatory}} -noprompt
   ignore_errors: yes
 - name: download IMX nexus maven settings.xml
-  action: get_url url={{nexussettings}} dest="/etc/maven/settings.xml" mode=0644 force="yes"
+  action: get_url url={{nexussettings | mandatory}} dest="/etc/maven/settings.xml" mode=0644 force="yes"
   # tags:
   #   - example
