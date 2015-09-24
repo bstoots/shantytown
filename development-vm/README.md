@@ -26,6 +26,8 @@
   E:\vm\SOMEVM-VM-NAME>
   git init
   git remote add -f origin git@github.com:bstoots/shantytown.git
+  # Or use this if you don't have a Github account:
+  # git remote add -f origin git://github.com/bstoots/shantytown.git
   git config core.sparsecheckout true
   Write-Output "development-vm"| Out-File -Encoding ascii .\.git\info\sparse-checkout
   git pull origin master
