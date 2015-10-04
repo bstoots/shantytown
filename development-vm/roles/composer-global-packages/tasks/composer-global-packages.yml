@@ -1,0 +1,16 @@
+---
+# Tasks for composer-global-packages
+- name: install global composer packages
+  action: "command composer global require {{item.key}}:{{item.value.version}}"
+  args:
+    creates: /home/{{development_vm.user.username | mandatory}}/.composer/vendor/bin/{{item.value.bin}}
+  when: development_vm.composer_global_packages is defined
+  with_dict: "{{ development_vm.composer_global_packages | default({}) }}"
+- name: link global composer packages to path
+  action: file src=/home/{{development_vm.user.username | mandatory}}/.composer/vendor/bin/{{item.value.bin}} dest=/usr/local/bin/{{item.value.bin}} state=link mode=0755
+  become: true
+  become_user: root
+  when: development_vm.composer_global_packages is defined
+  with_dict: "{{ development_vm.composer_global_packages | default({}) }}"
+  tags:
+    - composer-global-packages

@@ -1,16 +1,3 @@
 ---
-# Tasks for composer-global-packages
-- name: install global composer packages
-  action: command composer global require {{item.value}}
-  args:
-    creates: /home/{{username | mandatory}}/.composer/vendor/bin/{{item.key}}
-  when: composerglobalpackages is defined
-  with_dict: "{{ composerglobalpackages | default({}) }}"
-- name: link global composer packages to path
-  action: file src=/home/{{username | mandatory}}/.composer/vendor/bin/{{item.key}} dest=/usr/local/bin/{{item.key}} state=link mode=0755
-  become: true
-  become_user: root
-  when: composerglobalpackages is defined
-  with_dict: "{{ composerglobalpackages | default({}) }}"
-  # tags:
-  #   - example
+- include: composer-global-packages.yml
+  when: development_vm.composer_global_packages is defined

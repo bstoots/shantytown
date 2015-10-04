@@ -1,0 +1,8 @@
+---
+# Tasks for apt-packages
+- name: install apt packages
+  action: apt pkg={{item}} update_cache=yes state=present
+  with_items: 
+    - "{{development_vm.apt_packages | mandatory}}"
+  tags:
+    - apt-packages
