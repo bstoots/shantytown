@@ -1,1 +1,8 @@
+<<<<<<< HEAD
 **/.vagrant
+=======
+**/.vagrant
+
+**/*.sublime-project
+**/*.sublime-workspace
+>>>>>>> Update gitignore
