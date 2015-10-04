@@ -1,11 +1,11 @@
 ---
-# master playbook
-- include: network.yml
-- include: timezone.yml
-- include: apt-packages.yml
-- include: deb-packages.yml
-- include: user.yml
-- include: nfs-client.yml
-- include: composer.yml
-- include: composer-global-packages.yml
-- include: imx-java-dev.yml
+# master playbook.  copy to master.yml and edit as desired
+# - include: network.yml
+# - include: timezone.yml
+# - include: apt-packages.yml
+# - include: deb-packages.yml
+# - include: user.yml
+# - include: nfs-client.yml
+# - include: composer.yml
+# - include: composer-global-packages.yml
+# - include: imx-java-dev.yml
