@@ -90,7 +90,8 @@ config:
 ```yaml
 ---
 config:
-  # See Roles for valid config options
+  development_vm:
+    # See Roles for valid config options
 ```
 
 ## Roles
@@ -99,11 +100,11 @@ config:
 Installs aptitude packages from upstream repositories
 #### Config
 ```yaml
-aptpackages:
-  - packagename
+apt_packages:
   - foo
+  - bar
 ```
-aptpackages list takes any number of valid aptitude package names
+apt_packages is a list taking any number of aptitude package names
 
 ### composer
 Installs composer binary
@@ -114,22 +115,35 @@ None
 Installs composer packages globally
 #### Config
 ```yaml
-composerglobalpackages:
-  binary: "vendor/package:version"
-  dbsteward: "nkiraly/dbsteward:dev-master"
+composer_global_packages:
+  vendor/foo:
+    bin: foo
+    version: dev-master
+  vendor/bar:
+    bin: bar
+    version: 1.*
 ```
-composerglobalpackages hash takes any number of valid composer packages.  Keys are
-target binary name.  Values are vendor/package:version references needed by composer.
+composer_global_packages is a hash, keys are Composer vendor/package names.  Each vendor/package element is a hash defined as follows:
+
+* **bin**: (_Required_) Name of the binary being created.
+* **version**: (_Required_) Composer package version.
 
 ### deb-packages
 Downloads and installs debian packages from arbitrary URLs
 #### Config
 ```yaml
-debpackages:
-  somedeb.deb: http://location.of/somedeb.deb
+deb_packages:
+  foo:
+    url: http://location.of/foo.deb
+    dest: /tmp/foo.deb
+  bar:
+    url: http://location.of/bar.deb
+    dest: ~/bar.dev
 ```
-debpackages hash takes any number of deb targets.  Keys are name of the deb to be 
-created on the local machine.  Values are URLs of debs to download.
+deb_packages is a hash, keys are arbitrary identifiers.  Each deb identifier element is a hash defined as follows:
+
+* **url**: (_Required_) URL of the Debian package file.
+* **dest**: (_Required_) Download destination.
 
 ### imx-java-dev
 Installs Java development tools and configures use of Nexus
@@ -169,20 +183,26 @@ nfsexport: /path/to/export
 Sets the local timezone
 #### Config
 ```yaml
-timezone: America/New_York
+timezone: 
+  name: America/New_York
 ```
 
-This may be any valid Ubuntu timezone as specified here: [Ubuntu Timezones](http%3A%2F%2Fmanpages.ubuntu.com%2Fmanpages%2Fsaucy%2Fman3%2FDateTime%3A%3ATimeZone%3A%3ACatalog.3pm.html)
+timezone is a hash, keys are defined as follows:
+
+* **name**: (_Required_) This may be any valid tz database identifier as defined by IANA: [IANA Timezones](http://www.iana.org/time-zones).
 
 ### user
 Configures user and group
 #### Config
 ```yaml
-username: some.user
-usergroup: some.group
-uid: 10000
-gid: 10000
+user:
+  username: foo
+  usergroup: foo
+  uid: 10000
+  gid: 10000
 ```
+
+user is a hash, keys are defined as follows:
 
 * **username**: _(Required)_ Any valid username
 * **usergroup**: _(Optional)_ Defaults to same as username
