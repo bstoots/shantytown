@@ -2,6 +2,6 @@
 # nfs-client role
 - hosts: all
   become: true
-  become_user: "{{username | mandatory}}"
+  become_user: "{{development_vm.user.username | mandatory}}"
   roles:
     - { role: nfs-client }
