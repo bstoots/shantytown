@@ -15,8 +15,8 @@
     uid="{{development_vm.user.uid}}"
     shell=/bin/bash
     group="{{development_vm.user.username | mandatory}}"
-    groups=sudo,vboxsf,vagrant
-    append=yes
+    groups="{{ development_vm.user.groups | default("sudo,vboxsf,vagrant") }}"
+    append=no
     password="{{password | password_hash('sha512') | mandatory}}"
     update_password=on_create
     state=present
@@ -27,8 +27,8 @@
     name="{{development_vm.user.username | mandatory}}"
     shell=/bin/bash
     group="{{development_vm.user.username | mandatory}}"
-    groups=sudo,vboxsf,vagrant
-    append=yes
+    groups="{{ development_vm.user.groups | default("sudo,vboxsf,vagrant") }}"
+    append=no
     password="{{password | password_hash('sha512') | mandatory}}"
     update_password=on_create
     state=present
