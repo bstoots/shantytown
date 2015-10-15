@@ -1,0 +1,8 @@
+---
+# Tasks for groups
+- name: add defined groups
+  action: group name={{item.value | mandatory}} gid={{item.key | mandatory}} state=present
+  when: development_vm.groups is defined
+  with_dict: "{{ development_vm.groups | default({}) }}"
+  tags:
+    - groups

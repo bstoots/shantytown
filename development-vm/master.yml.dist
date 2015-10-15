@@ -4,6 +4,7 @@
 # - include: playbook/timezone.yml
 # - include: playbook/apt-packages.yml
 # - include: playbook/deb-packages.yml
+# - include: playbook/groups.yml
 # - include: playbook/user.yml
 # - include: playbook/nfs-client.yml
 # - include: playbook/composer.yml
