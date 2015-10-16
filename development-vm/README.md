@@ -175,18 +175,21 @@ Configures network adapters according to role template
 None
 
 ### nfs-client
-Configures and mounts NFS share
+Configures and mounts NFS shares.  Creates mount points if needed.
 #### Config
 ```yaml
-nfsmount: /path/to/nfs
-nfsserver: location.of.nfs
-nfsexport: /path/to/export
+nfs_client:
+  /path/to/mount:
+    server: location.of.nfs.server
+    export: /path/to/export
+    options: rw
 ```
 
-* **nfsmount**: _(Required)_ Local mount point for this NFS share on the guest machine. 
-  Directory will be created if it does not exist
-* **nfsserver**: _(Required)_ Network address of the NFS server
-* **nfsexport**: _(Required)_ Export path on the NFS server
+nfs_client is a hash, keys are paths to mount points on the guest.  Each mount point element is a hash defined as follows:
+
+* **server**: _(Required)_ URL or IP address to the NFS server
+* **export**: _(Required)_ Path to the NFS export on the remote server
+* **options**: _(Optional)_ NFS options to be passed to mount / stored in fstab
 
 ### timezone
 Sets the local timezone
