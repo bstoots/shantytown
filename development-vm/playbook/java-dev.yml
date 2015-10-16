@@ -1,0 +1,7 @@
+---
+# java-dev role
+- hosts: all
+  become: true
+  become_user: root
+  roles:
+    - { role: java-dev }

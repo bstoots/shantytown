@@ -1,0 +1,9 @@
+---
+  # Tasks for java-dev
+- name: install java jdk
+  action: apt pkg={{development_vm.java_dev.java | mandatory}} force=yes state=present
+  # Configure JAVA_HOME
+- name: add JAVA_HOME to /etc/environment
+  action: lineinfile dest=/etc/environment line=JAVA_HOME={{development_vm.java_dev.java_home | mandatory}} insertafter=EOF state=present
+  tags:
+    - java-dev
