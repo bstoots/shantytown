@@ -9,4 +9,6 @@
 # - include: playbook/nfs-client.yml
 # - include: playbook/composer.yml
 # - include: playbook/composer-global-packages.yml
-# - include: playbook/imx-java-dev.yml
+# - include: playbook/java-dev.yml
+# - include: playbook/java-dev-maven.yml
+# - include: playbook/java-dev-nexus.yml

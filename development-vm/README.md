@@ -154,20 +154,46 @@ groups:
 ```
 groups is a hash, keys are group names, values are optional GIDs.
 
-### imx-java-dev
-Installs Java development tools and configures use of Nexus
+### java-dev
+Configures system for Java development
 #### Config
 ```yaml
-javahome: "/path/to/jvm/java-1.7.0-openjdk-amd64"
-nexuscert: "http://location.of/cert.cer"
-nexussettings: "http://location.of/settings.xml"
-nexusstorepass: somepass
+java_dev:
+  java: openjdk
+  java_home: /path/to/openjdk
 ```
+java_dev is a hash defined as follows:
 
-* **javahome**: _(Required)_ Location of Java on the guest machine
-* **nexuscert**: _(Required)_ URL download location of Nexus certificate
-* **nexusstorepass**: _(Required)_ Password of the cacerts keystore
-* **nexussettings**: _(Required)_ URL download location of Nexus settings for Maven
+* **java**: (_Required_) Aptitude package name of the Java JDK to be installed
+* **java_home**: (_Required_) Path to the JDK for setting JAVA_HOME env variable
+
+### java-dev-maven
+Configures system for Java development using Maven
+#### Config
+```yaml
+java_dev_maven:
+  maven: maven
+  settings: http://location.of/settings.xml
+```
+java_dev_maven is a hash defined as follows:
+
+* **maven**: (_Required_) Aptitude package name of Maven 
+* **settings**: (_Optional_) URL download location of Maven settings
+
+### java-dev-nexus
+Configures system for Java development using Nexus.  Adds certificate too cacerts trust store, replacing existing certificate aliases when found.
+#### Config
+```yaml
+java_dev_nexus:
+  certificate: http://location.of/nexus.cer
+  alias: nexus
+  storepass: changeit
+```
+java_dev_nexus is a hash defined as follows:
+
+* **certificate**: (_Required_) URL download location of Nexus server certificate
+* **alias**: (_Required_) Certificate alias to be added to cacerts trust store
+* **storepass**: (_Optional_) Keystore password for cacerts trust store
 
 ### network
 Configures network adapters according to role template
