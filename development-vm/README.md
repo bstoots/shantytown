@@ -145,6 +145,15 @@ deb_packages is a hash, keys are arbitrary identifiers.  Each deb identifier ele
 * **url**: (_Required_) URL of the Debian package file.
 * **dest**: (_Required_) Download destination.
 
+### groups
+Adds additional groups
+#### Config
+```yaml
+groups:
+  groupname: 123
+```
+groups is a hash, keys are group names, values are optional GIDs.
+
 ### imx-java-dev
 Installs Java development tools and configures use of Nexus
 #### Config
