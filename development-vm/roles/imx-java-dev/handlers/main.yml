@@ -1,5 +1,0 @@
----
-# Handlers for imx-java-dev
-
-#- name: example restart
-#  action: service name=service state=restarted
