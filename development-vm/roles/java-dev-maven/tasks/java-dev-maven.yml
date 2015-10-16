@@ -1,0 +1,9 @@
+---
+  # Tasks for java-dev-maven
+- name: install maven
+  action: apt pkg={{development_vm.java_dev_maven.maven | mandatory}} force=yes state=present
+- name: download nexus maven settings.xml
+  action: get_url url={{development_vm.java_dev_maven.settings | mandatory}} dest="/etc/maven/settings.xml" mode=0644 force="yes"
+  when: development_vm.java_dev_maven.maven is defined
+  tags:
+    - java-dev-maven
