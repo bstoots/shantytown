@@ -210,6 +210,7 @@ Configures user and group
 user:
   username: foo
   usergroup: foo
+  groups: bar,baz
   uid: 10000
   gid: 10000
 ```
@@ -218,6 +219,7 @@ user is a hash, keys are defined as follows:
 
 * **username**: _(Required)_ Any valid username
 * **usergroup**: _(Optional)_ Defaults to same as username
+* **groups**: _(Optional)_ Additional groups for this user
 * **uid**: _(Optional)_ Any valid user id
 * **gid**: _(Optional)_ Any valid group id
 
