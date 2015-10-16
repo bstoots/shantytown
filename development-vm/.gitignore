@@ -2,3 +2,4 @@
 vagrant_ansible_inventory_*
 vagrant_config.yml
 ansible_config.yml
+master.yml

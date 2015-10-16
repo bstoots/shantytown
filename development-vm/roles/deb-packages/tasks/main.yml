@@ -1,12 +1,3 @@
 ---
-  # Tasks for deb-packages
-- name: download deb packages
-  action: get_url url={{item.value}} dest=/tmp/{{item.key}} mode=0700
-  with_dict: "{{ debpackages | default({}) }}"
-  when: debpackages is defined
-- name: install deb packages
-  action: apt deb=/tmp/{{item.key}} state=present
-  with_dict: "{{ debpackages | default({}) }}"
-  when: debpackages is defined
-  # tags:
-  #   - example
+- include: deb-packages.yml
+  when: development_vm.deb_packages is defined

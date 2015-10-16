@@ -1,12 +1,3 @@
 ---
-# Tasks for timezone
-- name: Set /etc/timezone
-  template: >
-    dest=/etc/timezone
-    src=timezone.j2
-    owner=root
-    group=root
-    mode=0644
-  notify: dpkg-reconfigure tzdata
-  # tags:
-  #   - example
+- include: timezone.yml
+  when: development_vm.timezone is defined

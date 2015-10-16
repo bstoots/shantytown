@@ -1,0 +1,3 @@
+---
+- include: java-dev-maven.yml
+  when: development_vm.java_dev_maven is defined

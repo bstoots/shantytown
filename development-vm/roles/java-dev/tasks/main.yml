@@ -1,0 +1,3 @@
+---
+- include: java-dev.yml
+  when: development_vm.java_dev is defined

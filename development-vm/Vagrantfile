@@ -39,6 +39,8 @@ Vagrant.configure(2) do |config|
     vb.memory = "2048"
     vb.name = vagrant_config['vmname']
   end
+  # Kind of hooptie but guest_ansible isn't picking up our ansible.cfg
+  config.vm.provision :shell, :inline => "cp /vagrant/ansible.cfg /home/vagrant/.ansible.cfg"
   # Provision the Ubuntu guest on the guest itself via guest_ansible plugin
   config.vm.provision :guest_ansible do |ansible|
     ansible.playbook = "master.yml"

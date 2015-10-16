@@ -1,0 +1,3 @@
+---
+- include: java-dev-nexus.yml
+  when: development_vm.java_dev_nexus is defined

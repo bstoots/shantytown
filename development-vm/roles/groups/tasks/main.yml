@@ -1,0 +1,3 @@
+---
+- include: groups.yml
+  when: development_vm.groups is defined

@@ -1,0 +1,16 @@
+---
+# Tasks for composer
+- name: install required apt packages
+  action: apt pkg=php5-cli state=present
+  become: true
+  become_user: root
+- name: get composer
+  action: get_url url=https://getcomposer.org/installer dest="/tmp/composer_installer" mode=0755 force="yes"
+- name: install composer
+  action: command php /tmp/composer_installer --install-dir=/usr/local/bin --filename=composer
+  become: true
+  become_user: root
+  args:
+    creates: /usr/local/bin/composer
+  tags:
+    - composer

@@ -90,7 +90,8 @@ config:
 ```yaml
 ---
 config:
-  # See Roles for valid config options
+  development_vm:
+    # See Roles for valid config options
 ```
 
 ## Roles
@@ -99,11 +100,11 @@ config:
 Installs aptitude packages from upstream repositories
 #### Config
 ```yaml
-aptpackages:
-  - packagename
+apt_packages:
   - foo
+  - bar
 ```
-aptpackages list takes any number of valid aptitude package names
+apt_packages is a list taking any number of aptitude package names
 
 ### composer
 Installs composer binary
@@ -114,37 +115,85 @@ None
 Installs composer packages globally
 #### Config
 ```yaml
-composerglobalpackages:
-  binary: "vendor/package:version"
-  dbsteward: "nkiraly/dbsteward:dev-master"
+composer_global_packages:
+  vendor/foo:
+    bin: foo
+    version: dev-master
+  vendor/bar:
+    bin: bar
+    version: 1.*
 ```
-composerglobalpackages hash takes any number of valid composer packages.  Keys are
-target binary name.  Values are vendor/package:version references needed by composer.
+composer_global_packages is a hash, keys are Composer vendor/package names.  Each vendor/package element is a hash defined as follows:
+
+* **bin**: (_Required_) Name of the binary being created.
+* **version**: (_Required_) Composer package version.
 
 ### deb-packages
 Downloads and installs debian packages from arbitrary URLs
 #### Config
 ```yaml
-debpackages:
-  somedeb.deb: http://location.of/somedeb.deb
+deb_packages:
+  foo:
+    url: http://location.of/foo.deb
+    dest: /tmp/foo.deb
+  bar:
+    url: http://location.of/bar.deb
+    dest: ~/bar.dev
 ```
-debpackages hash takes any number of deb targets.  Keys are name of the deb to be 
-created on the local machine.  Values are URLs of debs to download.
+deb_packages is a hash, keys are arbitrary identifiers.  Each deb identifier element is a hash defined as follows:
 
-### imx-java-dev
-Installs Java development tools and configures use of Nexus
+* **url**: (_Required_) URL of the Debian package file.
+* **dest**: (_Required_) Download destination.
+
+### groups
+Adds additional groups
 #### Config
 ```yaml
-javahome: "/path/to/jvm/java-1.7.0-openjdk-amd64"
-nexuscert: "http://location.of/cert.cer"
-nexussettings: "http://location.of/settings.xml"
-nexusstorepass: somepass
+groups:
+  groupname: 123
 ```
+groups is a hash, keys are group names, values are optional GIDs.
 
-* **javahome**: _(Required)_ Location of Java on the guest machine
-* **nexuscert**: _(Required)_ URL download location of Nexus certificate
-* **nexusstorepass**: _(Required)_ Password of the cacerts keystore
-* **nexussettings**: _(Required)_ URL download location of Nexus settings for Maven
+### java-dev
+Configures system for Java development
+#### Config
+```yaml
+java_dev:
+  java: openjdk
+  java_home: /path/to/openjdk
+```
+java_dev is a hash defined as follows:
+
+* **java**: (_Required_) Aptitude package name of the Java JDK to be installed
+* **java_home**: (_Required_) Path to the JDK for setting JAVA_HOME env variable
+
+### java-dev-maven
+Configures system for Java development using Maven
+#### Config
+```yaml
+java_dev_maven:
+  maven: maven
+  settings: http://location.of/settings.xml
+```
+java_dev_maven is a hash defined as follows:
+
+* **maven**: (_Required_) Aptitude package name of Maven 
+* **settings**: (_Optional_) URL download location of Maven settings
+
+### java-dev-nexus
+Configures system for Java development using Nexus.  Adds certificate too cacerts trust store, replacing existing certificate aliases when found.
+#### Config
+```yaml
+java_dev_nexus:
+  certificate: http://location.of/nexus.cer
+  alias: nexus
+  storepass: changeit
+```
+java_dev_nexus is a hash defined as follows:
+
+* **certificate**: (_Required_) URL download location of Nexus server certificate
+* **alias**: (_Required_) Certificate alias to be added to cacerts trust store
+* **storepass**: (_Optional_) Keystore password for cacerts trust store
 
 ### network
 Configures network adapters according to role template
@@ -152,40 +201,51 @@ Configures network adapters according to role template
 None
 
 ### nfs-client
-Configures and mounts NFS share
+Configures and mounts NFS shares.  Creates mount points if needed.
 #### Config
 ```yaml
-nfsmount: /path/to/nfs
-nfsserver: location.of.nfs
-nfsexport: /path/to/export
+nfs_client:
+  /path/to/mount:
+    server: location.of.nfs.server
+    export: /path/to/export
+    options: rw
 ```
 
-* **nfsmount**: _(Required)_ Local mount point for this NFS share on the guest machine. 
-  Directory will be created if it does not exist
-* **nfsserver**: _(Required)_ Network address of the NFS server
-* **nfsexport**: _(Required)_ Export path on the NFS server
+nfs_client is a hash, keys are paths to mount points on the guest.  Each mount point element is a hash defined as follows:
+
+* **server**: _(Required)_ URL or IP address to the NFS server
+* **export**: _(Required)_ Path to the NFS export on the remote server
+* **options**: _(Optional)_ NFS options to be passed to mount / stored in fstab
 
 ### timezone
 Sets the local timezone
 #### Config
 ```yaml
-timezone: America/New_York
+timezone: 
+  name: America/New_York
 ```
 
-This may be any valid Ubuntu timezone as specified here: [Ubuntu Timezones](http%3A%2F%2Fmanpages.ubuntu.com%2Fmanpages%2Fsaucy%2Fman3%2FDateTime%3A%3ATimeZone%3A%3ACatalog.3pm.html)
+timezone is a hash, keys are defined as follows:
+
+* **name**: (_Required_) This may be any valid tz database identifier as defined by IANA: [IANA Timezones](http://www.iana.org/time-zones).
 
 ### user
 Configures user and group
 #### Config
 ```yaml
-username: some.user
-usergroup: some.group
-uid: 10000
-gid: 10000
+user:
+  username: foo
+  usergroup: foo
+  groups: bar,baz
+  uid: 10000
+  gid: 10000
 ```
+
+user is a hash, keys are defined as follows:
 
 * **username**: _(Required)_ Any valid username
 * **usergroup**: _(Optional)_ Defaults to same as username
+* **groups**: _(Optional)_ Additional groups for this user
 * **uid**: _(Optional)_ Any valid user id
 * **gid**: _(Optional)_ Any valid group id
 

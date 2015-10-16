@@ -1,0 +1,39 @@
+---
+# Tasks for user
+# If GID was specified use that
+- name: add defined user group
+  action: group name={{development_vm.user.username | mandatory}} gid={{development_vm.user.gid}} state=present
+  when: development_vm.user.gid is defined
+# Otherwise use the next GID available to the system
+- name: add default user group
+  action: group name={{development_vm.user.username | mandatory}} state=present
+  when: development_vm.user.gid is not defined
+# If UID was specified use that 
+- name: add user with defined uid
+  action: user
+    name="{{development_vm.user.username | mandatory}}"
+    uid="{{development_vm.user.uid}}"
+    shell=/bin/bash
+    group="{{development_vm.user.username | mandatory}}"
+    groups="{{ development_vm.user.groups | default("sudo,vboxsf,vagrant") }}"
+    append=no
+    password="{{password | password_hash('sha512') | mandatory}}"
+    update_password=on_create
+    state=present
+  when: development_vm.user.uid is defined
+# Otherwise use the next UID available to the system (seems like a lot of copy/pasta)
+- name: add user with default uid
+  action: user
+    name="{{development_vm.user.username | mandatory}}"
+    shell=/bin/bash
+    group="{{development_vm.user.username | mandatory}}"
+    groups="{{ development_vm.user.groups | default("sudo,vboxsf,vagrant") }}"
+    append=no
+    password="{{password | password_hash('sha512') | mandatory}}"
+    update_password=on_create
+    state=present
+  when: development_vm.user.uid is not defined
+# Install an SSH key for the user if specified
+- name: install user SSH key
+  action: "authorized_key user={{ username | mandatory }} key={{development_vm.user.sshkey}}"
+  when: development_vm.user.sshkey is defined

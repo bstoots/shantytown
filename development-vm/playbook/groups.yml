@@ -1,0 +1,7 @@
+---
+# groups role
+- hosts: all
+  become: true
+  become_user: root
+  roles:
+    - { role: groups }

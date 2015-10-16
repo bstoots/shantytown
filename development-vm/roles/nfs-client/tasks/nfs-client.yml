@@ -1,0 +1,29 @@
+---
+# Tasks for nfs-client
+- name: install required apt packages
+  action: apt pkg=nfs-common state=present
+- name: start and enable rpcbind
+  action: service name=rpcbind state=started enabled=yes
+- name: create NFS mount point 
+  become: true
+  become_user: root
+  action: file
+    path="{{item.key | mandatory}}"
+    owner="{{development_vm.user.username | mandatory}}"
+    group="{{development_vm.user.username | mandatory}}"
+    state=directory
+  when: development_vm.nfs_client is defined
+  with_dict: "{{ development_vm.nfs_client | default({}) }}"
+- name: mount NFS export
+  become: true
+  become_user: root
+  action: mount 
+    name="{{item.key | mandatory}}"
+    src="{{item.value.server | mandatory}}":{{item.value.export | mandatory}}
+    fstype=nfs
+    opts="{{item.value.options | default("rw,tcp,nolock") }}"
+    state=mounted
+  when: development_vm.nfs_client is defined
+  with_dict: "{{ development_vm.nfs_client | default({}) }}"
+  tags:
+    - nfs-client

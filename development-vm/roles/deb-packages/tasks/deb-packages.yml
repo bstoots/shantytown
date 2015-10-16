@@ -1,0 +1,12 @@
+---
+  # Tasks for deb-packages
+- name: download deb packages
+  action: get_url url={{item.value.url}} dest={{item.value.dest}} force=yes mode=0700
+  with_dict: "{{ development_vm.deb_packages | default({}) }}"
+  when: development_vm.deb_packages is defined
+- name: install deb packages
+  action: apt deb={{item.value.dest}} update_cache=yes state=present
+  with_dict: "{{ development_vm.deb_packages | default({}) }}"
+  when: development_vm.deb_packages is defined
+  tags:
+    - deb-packages
