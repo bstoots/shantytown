@@ -1,0 +1,11 @@
+---
+  # Tasks for java-dev-nexus
+- name: download nexus certificate
+  action: get_url url={{development_vm.java_dev_nexus.certificate | mandatory}} dest="/tmp/nexus.cer" mode=0700 force="yes"
+- name: remove nexus certificate before adding
+  action: command {{development_vm.java_dev.java_home | mandatory}}/bin/keytool -delete -alias {{development_vm.java_dev_nexus.alias | mandatory}} -trustcacerts -keystore {{development_vm.java_dev.java_home | mandatory}}/jre/lib/security/cacerts -storepass {{ development_vm.java_dev_nexus.storepass | default("changeit") }} -noprompt
+  ignore_errors: yes
+- name: import nexus certificate into keystore
+  action: command {{development_vm.java_dev.java_home | mandatory}}/bin/keytool -import -alias {{development_vm.java_dev_nexus.alias | mandatory}} -file /tmp/nexus.cer -trustcacerts -keystore {{development_vm.java_dev.java_home | mandatory}}/jre/lib/security/cacerts -storepass {{ development_vm.java_dev_nexus.storepass | default("changeit") }} -noprompt
+  tags:
+    - java-dev-nexus
