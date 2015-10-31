@@ -1,8 +1,6 @@
 ---
 # Tasks for phpbrew
 - name: install required apt packages
-  become: true
-  become_user: root
   action: apt pkg={{item}} state=present
   with_items: 
     - php5
@@ -22,12 +20,8 @@
     - libreadline-dev
     - libicu-dev
 - name: get phpbrew
-  action: get_url dest=~/ url=https://github.com/phpbrew/phpbrew/raw/master/phpbrew
+  action: get_url dest=/usr/bin/phpbrew url=https://github.com/phpbrew/phpbrew/raw/master/phpbrew
 - name: set +x on phpbrew
-  action: file path=~/phpbrew mode=+x
-- name: install phpbrew to /usr/bin/
-  become: true
-  become_user: root
-  action: command mv ~/phpbrew /usr/bin/phpbrew
+  action: file path=/usr/bin/phpbrew mode=0755
   tags:
     - phpbrew

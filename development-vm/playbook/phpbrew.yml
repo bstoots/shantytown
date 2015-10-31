@@ -2,6 +2,6 @@
 # apt-packages role
 - hosts: all
   become: true
-  become_user: "{{development_vm.user.username | mandatory}}"
+  become_user: root
   roles:
     - { role: phpbrew }
