@@ -1,6 +1,8 @@
 ---
 # Tasks for phpbrew
 - name: install required apt packages
+  become: true
+  become_user: root
   action: apt pkg={{item}} state=present
   with_items: 
     - php5
