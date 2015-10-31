@@ -7,7 +7,7 @@
     - php5-dev
     - php-pear
     - autoconf
-    - automak
+    - automake
     - curl
     - build-essential
     - libxslt1-dev
