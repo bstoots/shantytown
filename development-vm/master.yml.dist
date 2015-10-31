@@ -12,3 +12,4 @@
 # - include: playbook/java-dev.yml
 # - include: playbook/java-dev-maven.yml
 # - include: playbook/java-dev-nexus.yml
+# - include: playbook/phpbrew.yml

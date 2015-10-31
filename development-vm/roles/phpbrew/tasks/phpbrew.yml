@@ -1,0 +1,31 @@
+---
+# Tasks for phpbrew
+- name: install required apt packages
+  action: apt pkg={{item}} state=present
+  with_items: 
+    - php5
+    - php5-dev
+    - php-pear
+    - autoconf
+    - automak
+    - curl
+    - build-essential
+    - libxslt1-dev
+    - re2c
+    - libxml2
+    - libxml2-dev
+    - php5-cli
+    - bison
+    - libbz2-dev
+    - libreadline-dev
+    - libicu-dev
+- name: get phpbrew
+  action: get_url dest=~/ url=https://github.com/phpbrew/phpbrew/raw/master/phpbrew
+- name: set +x on phpbrew
+  action: file path=~/phpbrew mode=+x
+- name: install phpbrew to /usr/bin/
+  become: true
+  become_user: root
+  action: command mv ~/phpbrew /usr/bin/phpbrew
+  tags:
+    - phpbrew

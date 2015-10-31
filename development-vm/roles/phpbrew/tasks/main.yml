@@ -1,0 +1,3 @@
+---
+- include: phpbrew.yml
+  when: development_vm.phpbrew is defined
