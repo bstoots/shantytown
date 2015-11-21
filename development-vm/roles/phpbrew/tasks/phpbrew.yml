@@ -23,5 +23,11 @@
   action: get_url dest=/usr/bin/phpbrew url=https://github.com/phpbrew/phpbrew/raw/master/phpbrew
 - name: set +x on phpbrew
   action: file path=/usr/bin/phpbrew mode=0755
+- name: Initialize phpbrew
+  action: shell phpbrew init
+  args:
+    creates: /home/{{development_vm.user.username | mandatory}}/.phpbrew
+  become: yes
+  become_user: "{{development_vm.user.username | mandatory}}"
   tags:
     - phpbrew
