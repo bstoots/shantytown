@@ -13,9 +13,48 @@ aconfig        = YAML.load_file("#{current_dir}/ansible_config.yml")
 ansible_config = aconfig['config']
 
 Vagrant.configure(2) do |config|
-  # Debian 8 "Jessie"
-  config.vm.box = "debian/jessie64"
-  config.vm.box_version = "8.2.1"
+
+  # # Debian 8 "Jessie"
+  # config.vm.box = "debian/jessie64"
+  # config.vm.box_version = "8.2.1"
+  # # Set hostname and vagrant name
+  # config.vm.hostname = vagrant_config['hostname']
+  # config.vm.define vagrant_config['vmname'].to_sym do |name_config| end
+  # # Move SSH port elsewhere if sshport is defined
+  # if vagrant_config.key?("sshport")
+  #   config.vm.network :forwarded_port, guest: 22, host: vagrant_config['sshport'], id: "ssh"
+  # end
+  # # Stand up a bridged adapter so we can talk to NFS
+  # if vagrant_config.key?("publicmac")
+  #   config.vm.network "public_network", :mac => vagrant_config['publicmac'], auto_config: true
+  # else
+  #   config.vm.network "public_network", auto_config: true
+  # end
+  # # Stand up a private adapter so we can talk to other local boxes
+  # config.vm.network "private_network", type: "dhcp", auto_config: true
+  # # Virtualbox specific config
+  # config.vm.provider "virtualbox" do |vb|
+  #   vb.gui = false
+  #   vb.memory = "2048"
+  #   vb.name = vagrant_config['vmname']
+  # end
+  # # Kind of hooptie but guest_ansible isn't picking up our ansible.cfg
+  # config.vm.provision :shell, :inline => "cp /vagrant/ansible.cfg /home/vagrant/.ansible.cfg"
+  # # Provision the Ubuntu guest on the guest itself via guest_ansible plugin
+  # config.vm.provision :guest_ansible do |ansible|
+  #   ansible.playbook = "master.yml"
+  #   # I couldn't get vagrant-guest_ansible to read the file from the filesystem
+  #   # but it also accepts a Hash so lets just do that and be done with it.
+  #   ansible.extra_vars = ansible_config
+  # end
+
+  # FreeBSD 10 RELEASE
+  config.vm.guest = :freebsd
+  config.vm.box = 'freebsd/FreeBSD-10.2-RELEASE'
+  config.vm.box_version = "2015.08.13"
+  # FreeBSD doesn't have fancy stuff like bash by default, kids these days
+  config.ssh.shell = 'sh'
+  config.vm.boot_timeout = 600
   # Set hostname and vagrant name
   config.vm.hostname = vagrant_config['hostname']
   config.vm.define vagrant_config['vmname'].to_sym do |name_config| end
@@ -25,25 +64,33 @@ Vagrant.configure(2) do |config|
   end
   # Stand up a bridged adapter so we can talk to NFS
   if vagrant_config.key?("publicmac")
-    config.vm.network "public_network", :mac => vagrant_config['publicmac'], auto_config: true
+    config.vm.network "public_network", :mac => vagrant_config['publicmac'], auto_config: false
   else
-    config.vm.network "public_network", auto_config: true
+    config.vm.network "public_network", auto_config: false
   end
-  # Stand up a private adapter so we can talk to other local boxes
-  config.vm.network "private_network", type: "dhcp", auto_config: true
+  # Config private development network
+  config.vm.network "private_network", type: "dhcp", auto_config: false
   # Virtualbox specific config
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
     vb.memory = "2048"
     vb.name = vagrant_config['vmname']
   end
+  # No shared folder.  We're going to treat this as a remote machine
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  #config.vm.synced_folder ".", "/vagrant", type: "smb"
   # Kind of hooptie but guest_ansible isn't picking up our ansible.cfg
-  config.vm.provision :shell, :inline => "cp /vagrant/ansible.cfg /home/vagrant/.ansible.cfg"
-  # Provision the Ubuntu guest on the guest itself via guest_ansible plugin
-  config.vm.provision :guest_ansible do |ansible|
-    ansible.playbook = "master.yml"
-    # I couldn't get vagrant-guest_ansible to read the file from the filesystem
-    # but it also accepts a Hash so lets just do that and be done with it.
-    ansible.extra_vars = ansible_config
-  end
+  # config.vm.provision :shell, :inline => "fetch http://is.dev.pitbpa0.priv.intermedix.com/~brian.stoots/shantytown/ansible.cfg -o /home/vagrant/.ansible.cfg"
+  # Shell provisioning because FreeBSD is a second class citizen when it comes to vagrant-guest_ansible
+  config.vm.provision "shell", privileged: false, path: "freebsd-ansible-guest.sh", args: "\"#{ansible_config.to_json.gsub('"', '\"')}\""
+  #
+  # config.vm.provision :shell, privileged: false, :inline => "sudo mkdir /vagrant && sudo mount_smbfs -I 10.51.4.140 //brian.stoots@PIT7LP7LS1/development-vm /vagrant"
+  # Now provision the guest itself via vagrant-guest_ansible
+  # config.vm.provision :guest_ansible do |ansible|
+  #   ansible.playbook = "master.yml"
+  #   # I couldn't get vagrant-guest_ansible to read the file from the filesystem
+  #   # but it also accepts a Hash so lets just do that and be done with it.
+  #   ansible.extra_vars = ansible_config
+  # end
+
 end
