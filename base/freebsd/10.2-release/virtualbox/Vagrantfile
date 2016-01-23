@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure(2) do |config|
+  config.vm.guest = :freebsd
+  config.vm.box = "freebsd/FreeBSD-10.2-RELEASE"
+  config.vm.box_version = "2015.08.13"
+  # FreeBSD doesn't have fancy stuff like bash by default, kids these days
+  config.ssh.shell = "sh"
+  config.vm.boot_timeout = 600
+  config.vm.hostname = "freebsd-10-2-release"
+  config.vm.define "freebsd-10-2-release".to_sym do |name_config| end
+  config.vm.network "private_network", type: "dhcp", auto_config: false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.name = "freebsd-10-2-release"
+  end
+end
