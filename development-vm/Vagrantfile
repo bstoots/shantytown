@@ -15,7 +15,7 @@ ansible_config = aconfig['config']
 Vagrant.configure(2) do |config|
   # Debian 8 "Jessie"
   config.vm.box = "debian/jessie64"
-  config.vm.box_version = "8.2.1"
+  config.vm.box_version = "8.2.2"
   # Set hostname and vagrant name
   config.vm.hostname = vagrant_config['hostname']
   config.vm.define vagrant_config['vmname'].to_sym do |name_config| end
