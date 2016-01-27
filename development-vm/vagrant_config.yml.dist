@@ -1,0 +1,6 @@
+---
+config:
+  hostname: 
+  vmname: 
+  sshport: 
+  publicmac: auto
