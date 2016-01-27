@@ -1,0 +1,15 @@
+---
+# master playbook.  copy to master.yml and edit as desired
+- hosts: localhost
+# - include: playbook/network.yml
+# - include: playbook/timezone.yml
+# - include: playbook/apt-packages.yml
+# - include: playbook/deb-packages.yml
+# - include: playbook/groups.yml
+# - include: playbook/user.yml
+# - include: playbook/nfs-client.yml
+# - include: playbook/composer.yml
+# - include: playbook/composer-global-packages.yml
+# - include: playbook/java-dev.yml
+# - include: playbook/java-dev-maven.yml
+# - include: playbook/java-dev-nexus.yml
